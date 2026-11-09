@@ -26,7 +26,7 @@ def create_app():
     # Contexto da aplicação (importações de rotas e modelos vão aqui)
     with app.app_context():
         # Importaremos os modelos aqui para o Alembic detectá-los nas migrations depois
-        # from app.models import ...
+        from app import models
         
         # Rota de Health Check (Teste rápido de integridade)
         @app.route('/health')
