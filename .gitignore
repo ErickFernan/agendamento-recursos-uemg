@@ -1,0 +1,63 @@
+# ==========================================
+# Variáveis de Ambiente e Segredos
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
+# Python / Compilados
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ==========================================
+# Ambientes Virtuais (Virtualenvs)
+# ==========================================
+venv/
+.venv/
+env/
+.env/
+
+# ==========================================
+# Testes e Cobertura (Pytest)
+# ==========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+nosetests.xml
+
+# ==========================================
+# Flask e Logs
+# ==========================================
+instance/
+*.log
+logs/
+
+# ==========================================
+# Banco de Dados Local / Volumes Docker
+# ==========================================
+*.db
+*.sqlite3
+postgres_data/
+pgdata/
+
+# ==========================================
+# IDEs e Ferramentas do Sistema Operacional
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# Alembic (Opcional)
+# ==========================================
+# Nota: alembic.ini GERALMENTE vai para o repositório, 
+# mas se você colocar senhas direto nele (não recomendado, use o .env), 
+# descomente a linha abaixo:
+# alembic.ini
