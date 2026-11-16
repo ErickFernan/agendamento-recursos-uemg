@@ -1,4 +1,5 @@
 from flask import Flask
+from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -23,10 +24,33 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
+
+    # Configuração do Swagger
+    swagger_config = {
+        "headers": [],
+        "specs": [{"endpoint": 'apispec', "route": '/apispec.json', "rule_filter": lambda rule: True, "model_filter": lambda tag: True}],
+        "static_url_path": "/flasgger_static",
+        "swagger_ui": True,
+        "specs_route": "/apidocs/"
+    }
+    
+    swagger_template = {
+        "info": {
+            "title": "API de Agendamento UEMG",
+            "description": "Documentação interativa da API de recursos e agendamentos.",
+            "version": "1.0.0"
+        }
+    }
+
+    Swagger(app, config=swagger_config, template=swagger_template)
+
     # Contexto da aplicação (importações de rotas e modelos vão aqui)
     with app.app_context():
         # Importaremos os modelos aqui para o Alembic detectá-los nas migrations depois
         from app import models
+
+        from app.routes.unidades_routes import unidades_bp
+        app.register_blueprint(unidades_bp, url_prefix='/api')
         
         # Rota de Health Check (Teste rápido de integridade)
         @app.route('/health')

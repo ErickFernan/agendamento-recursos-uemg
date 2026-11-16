@@ -15,7 +15,7 @@ services:
         condition: service_healthy
 
   db:
-    image: postgres:15-alpine
+    image: postgres:16-alpine
     container_name: uemg_db
     restart: always
     ports:

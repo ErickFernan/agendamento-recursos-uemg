@@ -1,0 +1,35 @@
+Cadastra uma nova unidade
+---
+tags:
+  - Unidades
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - nome
+        - sigla
+        - cidade
+        - estado
+      properties:
+        nome:
+          type: string
+          example: "Universidade do Estado de Minas Gerais"
+        sigla:
+          type: string
+          example: "UEMG"
+        cidade:
+          type: string
+          example: "Carangola"
+        estado:
+          type: string
+          example: "MG"
+responses:
+  201:
+    description: Unidade criada com sucesso
+  400:
+    description: Dados inválidos
+  409:
+    description: Já existe uma unidade com este nome

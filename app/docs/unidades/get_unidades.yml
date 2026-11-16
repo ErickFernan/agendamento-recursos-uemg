@@ -1,0 +1,9 @@
+Lista todas as unidades cadastradas
+---
+tags:
+  - Unidades
+responses:
+  200:
+    description: Lista de unidades retornada com sucesso
+  500:
+    description: Erro interno no servidor

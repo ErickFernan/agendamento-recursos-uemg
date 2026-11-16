@@ -1,0 +1,29 @@
+Atualiza parcialmente uma unidade (Envie apenas o que deseja mudar)
+---
+tags:
+  - Unidades
+parameters:
+  - in: path
+    name: id
+    type: integer
+    required: true
+    description: ID numérico da unidade
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: "Novo Nome do Campus"
+        estado:
+          type: string
+          example: "SP"
+responses:
+  200:
+    description: Unidade atualizada parcialmente com sucesso
+  400:
+    description: Dados inválidos
+  404:
+    description: Unidade não encontrada

@@ -61,3 +61,8 @@ Thumbs.db
 # mas se você colocar senhas direto nele (não recomendado, use o .env), 
 # descomente a linha abaixo:
 # alembic.ini
+
+# ==========================================
+# Outros
+# ==========================================
+anotacoes.txt

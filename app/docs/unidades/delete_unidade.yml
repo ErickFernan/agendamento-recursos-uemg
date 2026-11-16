@@ -1,0 +1,17 @@
+Deleta uma unidade
+---
+tags:
+  - Unidades
+parameters:
+  - in: path
+    name: id
+    type: integer
+    required: true
+    description: ID numérico da unidade a ser deletada
+responses:
+  200:
+    description: Unidade deletada com sucesso
+  404:
+    description: Unidade não encontrada
+  409:
+    description: Conflito - Não é possível deletar pois existem registros vinculados
