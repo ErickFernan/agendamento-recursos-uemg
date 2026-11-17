@@ -1,4 +1,5 @@
 from app import db
+from sqlalchemy import UniqueConstraint
 
 # ==========================================
 # TABELAS ASSOCIATIVAS (Relações Muitos-para-Muitos)
@@ -30,6 +31,10 @@ class Unidade(db.Model):
     # Relacionamentos 1:N
     recursos = db.relationship('Recurso', backref='unidade', lazy=True)
     usuarios = db.relationship('Usuario', backref='unidade', lazy=True)
+
+    __table_args__ = (
+        UniqueConstraint('nome', 'cidade', name='uq_unidade_nome_cidade'),
+    )
 
 class CategoriaRecurso(db.Model):
     __tablename__ = 'categoria_recurso'
@@ -89,6 +94,10 @@ class Recurso(db.Model):
     # Relacionamentos
     agendamentos = db.relationship('Agendamento', backref='recurso', lazy=True)
 
+    __table_args__ = (
+        UniqueConstraint('nome', 'unidade_id', name='uq_recurso_nome_unidade'),
+    )
+
 class Agendamento(db.Model):
     __tablename__ = 'agendamento'
     
@@ -104,4 +113,19 @@ class Agendamento(db.Model):
 
     # Relacionamentos M:N (Outras pessoas convidadas para o agendamento)
     participantes = db.relationship('Usuario', secondary=participante_agendamento, backref=db.backref('agendamentos_participados', lazy=True))
+
+
+    """
+    IMPORTANTE:
+        Se você colocar apenas um UniqueConstraint nos campos (recurso_id, data_hora_inicio), você impede que duas pessoas agendem exatamente às 14:00. 
+        Mas não impede que o Usuário A agende das 14:00 às 16:00, e o Usuário B agende das 15:00 às 17:00 (gerando sobreposição).
+
+        Como resolver?
+        No PostgreSQL, existe uma trava avançada chamada EXCLUDE constraint (que impede sobreposição de intervalos de tempo). Porém, implementar isso 
+        no SQLAlchemy via Alembic é bem complexo.
+
+        A recomendação para agora: Não coloque restrição de horário diretamente no modelo de banco de dados do agendamento. 
+        Deixe para tratar isso na Regra de Negócio (no seu arquivo de rotas). Antes de dar o db.session.add(novo_agendamento), você fará uma 
+        query verificando se já existe algum agendamento para aquele recurso_id cujos horários se cruzem com o horário solicitado.
+    """
     

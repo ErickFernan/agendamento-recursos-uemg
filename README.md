@@ -15,6 +15,11 @@ Este projeto tem como objetivo fornecer uma plataforma robusta para a gestão e 
 
 ---
 
+## 🔗 Links Úteis e Documentação
+
+* 📄 **Documentação Interativa (Swagger):** Com os containers rodando, acesse a documentação completa e teste as rotas diretamente no navegador através de `http://localhost:5000/apidocs/`
+* 📊 **Quadro Kanban (Roadmap):** Acompanhe o status de desenvolvimento, as *issues* atuais e as próximas entregas do projeto no nosso [Painel do GitHub Projects](https://github.com/users/ErickFernan/projects/4/views/1).
+
 ## 🚀 Como Inicializar o Projeto (Onboarding)
 
 Para rodar este projeto na sua máquina local, siga os passos abaixo:
