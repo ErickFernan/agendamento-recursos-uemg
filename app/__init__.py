@@ -1,5 +1,7 @@
+import os
 from flask import Flask
 from flasgger import Swagger
+from loguru import logger
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_jwt_extended import JWTManager
@@ -24,6 +26,13 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
+    # Configuração do Loguru
+    # Cria a pasta 'logs' automaticamente se ela não existir
+    os.makedirs('logs', exist_ok=True)
+    
+    # Configura para salvar em arquivo, criando um novo arquivo a cada 10MB
+    logger.add("logs/api.log", rotation="10 MB", retention="30 days", level="INFO")
+    logger.info("Iniciando a API de Agendamentos da UEMG...")
 
     # Configuração do Swagger
     swagger_config = {
