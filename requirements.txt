@@ -17,6 +17,7 @@ loguru==0.8.0
 Mako==1.4.3
 MarkupSafe==3.0.4
 marshmallow==4.4.0
+marshmallow-sqlalchemy==1.6.0
 mistune==3.4.0
 packaging==26.3
 pluggy==1.7.0

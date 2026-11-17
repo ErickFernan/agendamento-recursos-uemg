@@ -1,0 +1,101 @@
+tags:
+  - Usuários
+summary: "Cadastrar um novo usuário"
+description: "Cria um novo registro de usuário no sistema vinculando-o a uma Unidade. A senha informada na requisição é automaticamente submetida a um algoritmo de hashing antes de ser salva no banco de dados."
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+parameters:
+  - in: "body"
+    name: "body"
+    description: "Objeto JSON contendo os dados do novo usuário"
+    required: true
+    schema:
+      type: "object"
+      required:
+        - nome
+        - email
+        - senha
+        - unidade_id
+      properties:
+        nome:
+          type: "string"
+          description: "Nome completo do usuário"
+          example: "Erick Amorim Fernandes"
+        email:
+          type: "string"
+          description: "Endereço de e-mail de acesso (deve ser único)"
+          example: "dverickfernan@gmail.com"
+        senha:
+          type: "string"
+          description: "Senha em texto plano (mínimo 6 caracteres). O sistema fará o hash automaticamente."
+          example: "MinhaSenhaSegura123"
+        unidade_id:
+          type: "integer"
+          description: "ID da Unidade (Campus) em que este usuário estuda/trabalha."
+          example: 1
+responses:
+  201:
+    description: "Usuário criado com sucesso. O campo senha nunca é retornado na resposta."
+    schema:
+      type: "object"
+      properties:
+        mensagem:
+          type: "string"
+          example: "Usuário criado com sucesso!"
+        usuario:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+              example: 1
+            nome:
+              type: "string"
+              example: "Erick Amorim Fernandes"
+            email:
+              type: "string"
+              example: "dverickfernan@gmail.com"
+            unidade_id:
+              type: "integer"
+              example: 1
+  400:
+    description: "Dados inválidos enviados pelo cliente (ex: senha curta, e-mail mal formatado)."
+    schema:
+      type: "object"
+      properties:
+        erro:
+          type: "string"
+          example: "Dados inválidos"
+        detalhes:
+          type: "object"
+          example: 
+            senha: ["A senha deve ter no mínimo 6 caracteres."]
+            email: ["Formato de e-mail inválido."]
+  404:
+    description: "A unidade (unidade_id) informada não existe no banco de dados."
+    schema:
+      type: "object"
+      properties:
+        erro:
+          type: "string"
+          example: "A unidade informada não existe."
+  409:
+    description: "Conflito: Já existe um usuário cadastrado com o e-mail informado."
+    schema:
+      type: "object"
+      properties:
+        erro:
+          type: "string"
+          example: "Este e-mail já está em uso por outro usuário."
+  500:
+    description: "Erro interno no servidor."
+    schema:
+      type: "object"
+      properties:
+        erro:
+          type: "string"
+          example: "Erro interno no servidor."
+        detalhes:
+          type: "string"
+          example: "Detalhe técnico da exceção..."

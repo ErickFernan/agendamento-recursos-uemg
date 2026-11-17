@@ -81,7 +81,10 @@ def create_app():
         from app import models
 
         from app.routes.unidades_routes import unidades_bp
+        from app.routes.usuarios_routes import usuarios_bp
+
         app.register_blueprint(unidades_bp, url_prefix='/api')
+        app.register_blueprint(usuarios_bp, url_prefix='/api')
         
         # Rota de Health Check (Teste rápido de integridade)
         @app.route('/health')
