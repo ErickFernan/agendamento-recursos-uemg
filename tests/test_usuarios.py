@@ -296,4 +296,4 @@ def test_buscar_usuario_por_id_terceiro_403(client, user_token_headers, db_sessi
 
 def test_buscar_usuario_por_id_inexistente_404(client, admin_token_headers):
     response = client.get("/api/usuarios/9999", headers=admin_token_headers)
-    assert response.status_code == 4048
+    assert response.status_code == 404
