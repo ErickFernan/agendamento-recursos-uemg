@@ -1,0 +1,23 @@
+Busca um usuário específico pelo ID (Admin ou Próprio Usuário)
+---
+tags:
+  - Usuários
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do usuário
+responses:
+  200:
+    description: Detalhes do usuário retornados com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (apenas admin ou o próprio dono do perfil)
+  404:
+    description: Usuário não encontrado
+  500:
+    description: Erro interno no servidor

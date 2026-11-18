@@ -1,0 +1,24 @@
+Lista todos os recursos cadastrados (com filtros opcionais)
+---
+tags:
+  - Recursos
+security:
+  - Bearer: []
+parameters:
+  - name: unidade_id
+    in: query
+    type: integer
+    required: false
+    description: Filtrar recursos pelo ID da unidade
+  - name: categoria_id
+    in: query
+    type: integer
+    required: false
+    description: Filtrar recursos pelo ID da categoria
+responses:
+  200:
+    description: Lista de recursos retornada com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  500:
+    description: Erro interno no servidor

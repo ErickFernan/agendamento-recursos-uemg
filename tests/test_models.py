@@ -1,7 +1,6 @@
 import pytest
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
-from app import db
 from app.models import (
     Unidade,
     CategoriaRecurso,
@@ -31,42 +30,48 @@ def test_criar_unidade_model(app, db_session):
 
 
 def test_unidade_unique_constraint(app, db_session):
-    u1 = Unidade(
-        nome="Campus I", sigla="C1", cidade="Uberaba", estado="MG"
-    )
+    u1 = Unidade(nome="Campus I", sigla="C1", cidade="Uberaba", estado="MG")
     db_session.add(u1)
     db_session.commit()
 
-    u2 = Unidade(
-        nome="Campus I", sigla="C2", cidade="Uberaba", estado="MG"
-    )
+    u2 = Unidade(nome="Campus I", sigla="C2", cidade="Uberaba", estado="MG")
     db_session.add(u2)
     with pytest.raises(IntegrityError):
         db_session.commit()
     db_session.rollback()
 
 
-def test_categoria_e_status_models(app, db_session):
+def test_criar_categoria_recurso_model(app, db_session):
     cat = CategoriaRecurso(nome="Laboratório", descricao="Labs de Informática")
-    status = StatusAgendamento(nome="Pendente")
-    db_session.add_all([cat, status])
+    db_session.add(cat)
     db_session.commit()
 
     assert cat.id is not None
-    assert status.id is not None
     assert cat.nome == "Laboratório"
+
+
+def test_criar_status_agendamento_model(app, db_session):
+    status = StatusAgendamento(nome="Pendente")
+    db_session.add(status)
+    db_session.commit()
+
+    assert status.id is not None
     assert status.nome == "Pendente"
 
 
-def test_perfil_e_usuario_model(app, db_session):
-    unidade = Unidade(
-        nome="Unidade Sul", sigla="US", cidade="Passos", estado="MG"
-    )
-    db_session.add(unidade)
-    db_session.commit()
-
+def test_criar_perfil_model(app, db_session):
     perfil = Perfil(nome="professor")
     db_session.add(perfil)
+    db_session.commit()
+
+    assert perfil.id is not None
+    assert perfil.nome == "professor"
+
+
+def test_criar_usuario_com_perfil_model(app, db_session):
+    unidade = Unidade(nome="Unidade Sul", sigla="US", cidade="Passos", estado="MG")
+    perfil = Perfil(nome="professor")
+    db_session.add_all([unidade, perfil])
     db_session.commit()
 
     usuario = Usuario(
@@ -87,9 +92,7 @@ def test_perfil_e_usuario_model(app, db_session):
 
 
 def test_recurso_model(app, db_session):
-    unidade = Unidade(
-        nome="Unidade Leste", sigla="UL", cidade="Divinópolis", estado="MG"
-    )
+    unidade = Unidade(nome="Unidade Leste", sigla="UL", cidade="Divinópolis", estado="MG")
     cat = CategoriaRecurso(nome="Auditório", descricao="Auditório principal")
     db_session.add_all([unidade, cat])
     db_session.commit()
@@ -106,9 +109,7 @@ def test_recurso_model(app, db_session):
 
 
 def test_agendamento_model(app, db_session):
-    unidade = Unidade(
-        nome="Unidade Norte", sigla="UN", cidade="Muzambinho", estado="MG"
-    )
+    unidade = Unidade(nome="Unidade Norte", sigla="UN", cidade="Muzambinho", estado="MG")
     cat = CategoriaRecurso(nome="Quadra", descricao="Quadra poliesportiva")
     status = StatusAgendamento(nome="Confirmado")
     db_session.add_all([unidade, cat, status])
