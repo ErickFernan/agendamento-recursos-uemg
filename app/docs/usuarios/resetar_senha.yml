@@ -6,6 +6,8 @@ consumes:
   - "application/json"
 produces:
   - "application/json"
+security:
+  - Bearer: []
 parameters:
   - in: "path"
     name: "id"
@@ -29,6 +31,9 @@ responses:
     description: "Senha atualizada com sucesso."
   400:
     description: "Senha ausente ou menor que 6 caracteres."
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
+  403:
+    description: "Acesso negado. Requer privilégios de administrador."
   404:
     description: "Usuário não encontrado."
-    

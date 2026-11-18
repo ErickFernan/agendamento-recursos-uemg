@@ -5,6 +5,7 @@ from loguru import logger
 from app.models import db, Unidade
 from app.schemas.unidade_schema import UnidadeSchema
 from sqlalchemy.exc import IntegrityError
+from flask_jwt_extended import jwt_required, get_jwt
 
 unidades_bp = Blueprint('unidades', __name__)
 
@@ -16,7 +17,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 @unidades_bp.route('/unidades', methods=['POST'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'post_unidade.yml'))
+@jwt_required()
 def criar_unidade():
+    # Autorização: Apenas Administradores podem criar unidades
+    claims = get_jwt()
+    if 'admin' not in claims.get('perfis', []):
+        logger.warning(f"Tentativa de criação de unidade negada para usuário ID {claims.get('sub')}. Faltam privilégios.")
+        return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
+
     json_data = request.get_json()
     
     erros = unidade_schema.validate(json_data)
@@ -54,7 +62,9 @@ def criar_unidade():
 
 @unidades_bp.route('/unidades', methods=['GET'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'get_unidades.yml'))
+@jwt_required()
 def listar_unidades():
+    # Qualquer usuário logado pode listar as unidades (Não precisa checar admin)
     try:
         unidades = Unidade.query.all()
         resultado = unidades_schema.dump(unidades)
@@ -67,7 +77,13 @@ def listar_unidades():
 
 @unidades_bp.route('/unidades/<int:id>', methods=['PUT'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'put_unidade.yml'))
+@jwt_required()
 def atualizar_unidade_total(id):
+    # Autorização: Apenas Administradores
+    claims = get_jwt()
+    if 'admin' not in claims.get('perfis', []):
+        return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
+
     unidade = Unidade.query.get(id)
     if not unidade:
         logger.warning(f"Tentativa de atualização total (PUT) em unidade inexistente. ID: {id}")
@@ -102,7 +118,13 @@ def atualizar_unidade_total(id):
 
 @unidades_bp.route('/unidades/<int:id>', methods=['PATCH'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'patch_unidade.yml'))
+@jwt_required()
 def atualizar_unidade_parcial(id):
+    # Autorização: Apenas Administradores
+    claims = get_jwt()
+    if 'admin' not in claims.get('perfis', []):
+        return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
+
     unidade = Unidade.query.get(id)
     if not unidade:
         logger.warning(f"Tentativa de atualização parcial (PATCH) em unidade inexistente. ID: {id}")
@@ -136,7 +158,13 @@ def atualizar_unidade_parcial(id):
 
 @unidades_bp.route('/unidades/<int:id>', methods=['DELETE'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'delete_unidade.yml'))
+@jwt_required()
 def deletar_unidade(id):
+    # Autorização: Apenas Administradores
+    claims = get_jwt()
+    if 'admin' not in claims.get('perfis', []):
+        return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
+
     unidade = Unidade.query.get(id)
     if not unidade:
         logger.warning(f"Tentativa de exclusão (DELETE) em unidade inexistente. ID: {id}")
@@ -156,3 +184,4 @@ def deletar_unidade(id):
         db.session.rollback()
         logger.error(f"Erro interno crítico ao tentar deletar a unidade {id}: {str(e)}")
         return jsonify({"erro": "Erro interno no servidor.", "detalhes": str(e)}), 500
+    

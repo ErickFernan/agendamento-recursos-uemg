@@ -20,3 +20,4 @@ class Config:
     
     # Desativa o rastreamento de modificações para economizar memória
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    

@@ -1,0 +1,51 @@
+tags:
+  - Autenticação
+summary: "Realizar login"
+description: "Valida as credenciais do usuário e retorna um Token JWT de acesso (access_token)."
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+parameters:
+  - in: "body"
+    name: "body"
+    required: true
+    schema:
+      type: "object"
+      required:
+        - email
+        - senha
+      properties:
+        email:
+          type: "string"
+          example: "dverickfernan@gmail.com"
+        senha:
+          type: "string"
+          example: "MinhaSenhaSegura123"
+responses:
+  200:
+    description: "Login bem-sucedido."
+    schema:
+      type: "object"
+      properties:
+        mensagem:
+          type: "string"
+          example: "Login realizado com sucesso!"
+        access_token:
+          type: "string"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6..."
+        usuario:
+          type: "object"
+          properties:
+            id:
+              type: "integer"
+            nome:
+              type: "string"
+            unidade_id:
+              type: "integer"
+  400:
+    description: "Formato de dados inválido."
+  401:
+    description: "Não autorizado (E-mail ou senha incorretos)."
+  500:
+    description: "Erro interno no servidor."

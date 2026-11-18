@@ -2,6 +2,8 @@ Deleta uma unidade
 ---
 tags:
   - Unidades
+security:
+  - Bearer: []
 parameters:
   - in: path
     name: id
@@ -11,7 +13,13 @@ parameters:
 responses:
   200:
     description: Unidade deletada com sucesso
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
+  403:
+    description: "Acesso negado. Requer privilégios de administrador."
   404:
     description: Unidade não encontrada
   409:
     description: Conflito - Não é possível deletar pois existem registros vinculados
+  500:
+    description: Erro interno no servidor

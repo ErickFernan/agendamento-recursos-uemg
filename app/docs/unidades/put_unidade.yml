@@ -2,6 +2,8 @@ Atualiza totalmente uma unidade (Substituição)
 ---
 tags:
   - Unidades
+security:
+  - Bearer: []
 parameters:
   - in: path
     name: id
@@ -36,5 +38,11 @@ responses:
     description: Unidade atualizada com sucesso
   400:
     description: Dados inválidos
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
+  403:
+    description: "Acesso negado. Requer privilégios de administrador."
   404:
     description: Unidade não encontrada
+  500:
+    description: Erro interno no servidor

@@ -6,6 +6,8 @@ consumes:
   - "application/json"
 produces:
   - "application/json"
+security:
+  - Bearer: []
 parameters:
   - in: "body"
     name: "body"
@@ -72,6 +74,10 @@ responses:
           example: 
             senha: ["A senha deve ter no mínimo 6 caracteres."]
             email: ["Formato de e-mail inválido."]
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
+  403:
+    description: "Acesso negado. Requer privilégios de administrador."
   404:
     description: "A unidade (unidade_id) informada não existe no banco de dados."
     schema:

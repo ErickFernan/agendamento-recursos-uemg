@@ -30,6 +30,34 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
 
+    # ==========================================
+    # CUSTOMIZAÇÃO DE ERROS DO JWT (TOKEN) E LOGS
+    # ==========================================
+    @jwt.unauthorized_loader
+    def missing_token_callback(error_string):
+        logger.warning(f"401 - Tentativa de acesso sem token JWT válido. Detalhe: {error_string}")
+        return jsonify({
+            "erro": "Acesso não autorizado.",
+            "detalhes": "O Token de acesso está ausente ou o cabeçalho Authorization está incorreto."
+        }), 401
+
+    @jwt.expired_token_loader
+    def expired_token_callback(jwt_header, jwt_payload):
+        usuario_id = jwt_payload.get('sub', 'Desconhecido')
+        logger.info(f"401 - Token expirado recusado. Usuário ID: {usuario_id}")
+        return jsonify({
+            "erro": "Token expirado.",
+            "detalhes": "Seu tempo de sessão acabou. Por favor, faça login novamente."
+        }), 401
+
+    @jwt.invalid_token_loader
+    def invalid_token_callback(error_string):
+        logger.warning(f"401 - Tentativa de acesso com token JWT adulterado/inválido: {error_string}")
+        return jsonify({
+            "erro": "Token inválido.",
+            "detalhes": "O token fornecido foi adulterado ou não é reconhecido pelo servidor."
+        }), 401
+
     # Configuração do Loguru
     # Cria a pasta 'logs' automaticamente se ela não existir
     os.makedirs('logs', exist_ok=True)
@@ -70,6 +98,15 @@ def create_app():
             "title": "API de Agendamento UEMG",
             "description": "Documentação interativa da API de recursos e agendamentos.",
             "version": "1.0.0"
+        },
+        # Adiciona o suporte ao botão "Authorize" no Swagger UI
+        "securityDefinitions": {
+            "Bearer": {
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header",
+                "description": "Insira o token JWT aqui no formato: Bearer {seu_token}"
+            }
         }
     }
 
@@ -82,9 +119,11 @@ def create_app():
 
         from app.routes.unidades_routes import unidades_bp
         from app.routes.usuarios_routes import usuarios_bp
+        from app.routes.auth_routes import auth_bp
 
         app.register_blueprint(unidades_bp, url_prefix='/api')
         app.register_blueprint(usuarios_bp, url_prefix='/api')
+        app.register_blueprint(auth_bp, url_prefix='/api')
         
         # Rota de Health Check (Teste rápido de integridade)
         @app.route('/health')

@@ -1,0 +1,14 @@
+# Configurações do Flask
+FLASK_APP=
+FLASK_DEBUG=
+SECRET_KEY=
+
+# Configurações do Banco de Dados (PostgreSQL)
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+POSTGRES_HOST=
+POSTGRES_PORT=
+
+# Configurações do JWT (Autenticação)
+JWT_SECRET_KEY=

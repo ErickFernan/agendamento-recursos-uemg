@@ -4,6 +4,8 @@ summary: "Listar todos os usuários"
 description: "Retorna uma lista com todos os usuários cadastrados. As senhas em hash são omitidas por segurança."
 produces:
   - "application/json"
+security:
+  - Bearer: []
 responses:
   200:
     description: "Operação bem-sucedida."
@@ -20,6 +22,9 @@ responses:
             type: "string"
           unidade_id:
             type: "integer"
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
+  403:
+    description: "Acesso negado. Requer privilégios de administrador."
   500:
     description: "Erro interno no servidor."
-    

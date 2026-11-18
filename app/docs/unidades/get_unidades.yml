@@ -2,8 +2,12 @@ Lista todas as unidades cadastradas
 ---
 tags:
   - Unidades
+security:
+  - Bearer: []
 responses:
   200:
     description: Lista de unidades retornada com sucesso
+  401:
+    description: "Não autorizado. Token de acesso ausente ou inválido."
   500:
     description: Erro interno no servidor

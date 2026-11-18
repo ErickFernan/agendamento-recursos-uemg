@@ -12,6 +12,9 @@ Este projeto tem como objetivo fornecer uma plataforma robusta para a gestão e 
 - **ORM & Migrations:** SQLAlchemy + Alembic
 - **Infraestrutura:** Docker & Docker Compose
 - **Validação de Dados:** Marshmallow
+- **Segurança & Autenticação:** Flask-JWT-Extended (Tokens JWT)
+- **Documentação API:** Flasgger (Swagger UI)
+- **Monitoramento & Logs:** Loguru
 
 ---
 
@@ -43,7 +46,7 @@ cd agendamento-recursos-uemg
 > **Nota:** Após clonar, lembre-se de mudar para a branch de desenvolvimento com o comando `git checkout dev`.
 
 **Passo B: Configurar Variáveis de Ambiente**
-Solicite ao Tech Lead (Erick) o arquivo `.env` do projeto. Coloque este arquivo na raiz do repositório (ele contém as senhas do banco de dados e segredos da aplicação e nunca deve ser "commitado").
+Solicite ao Tech Lead o arquivo `.env` do projeto (ou utilize o `env_example.txt` para preencher o arquivo `.env` ). Coloque este arquivo na raiz do repositório (ele contém as senhas do banco de dados, chaves secretas do JWT e nunca deve ser "commitado").
 
 **Passo C: Subir os Containers**
 Construa e inicie a infraestrutura via Docker:
@@ -59,7 +62,53 @@ Com os containers rodando, aplique as migrações para criar as tabelas no Postg
 ```bash
 docker compose exec web flask db upgrade
 ```
+
+Em seguida, para alimentar o banco com algumas informações básicas use:
+```bash
+docker compose exec web python seed.py
+```
+
 Pronto! A API já estará respondendo em `http://localhost:5000`.
+
+---
+
+## 🔒 Segurança e Autorização (Padrão para Novas Rotas)
+
+A nossa API utiliza o padrão **Stateless JWT** com **RBAC (Role-Based Access Control)**. Os privilégios (ex: `admin`, `aluno`) são embutidos dentro do próprio token no momento do login.
+
+Ao criar uma nova rota que exige segurança, você **DEVE** seguir este padrão:
+
+### 1. Proteger a Rota (Autenticação)
+Use o decorador `@jwt_required()` logo abaixo do Swagger e antes da função. Isso garante que apenas usuários logados (com um Header `Bearer Token` válido) acessem a rota.
+```python
+from flask_jwt_extended import jwt_required, get_jwt
+
+@meu_bp.route('/minha-rota', methods=['GET'])
+@swag_from(...)
+@jwt_required()
+def minha_funcao():
+    # Código executado apenas se o token for válido
+```
+
+### 2. Restringir por Perfil (Autorização)
+Se a rota fizer alterações críticas (POST, PUT, DELETE), você deve extrair as *claims* do token e validar se o usuário possui a *role* necessária (ex: `admin`). Caso não tenha, retorne o Erro HTTP 403 (Forbidden).
+```python
+@meu_bp.route('/minha-rota', methods=['POST'])
+@swag_from(...)
+@jwt_required()
+def minha_funcao_critica():
+    claims = get_jwt()
+    if 'admin' not in claims.get('perfis', []):
+        return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
+    
+    # Continua o fluxo normal...
+```
+
+### 3. Atualizar a Documentação (Swagger)
+Todo arquivo `.yml` de rota protegida precisa ter as seguintes adições:
+1. O bloco `security: - Bearer: []` (Na raiz do documento).
+2. O código de resposta `401` para token inválido/ausente.
+3. O código de resposta `403` caso a rota exija privilégios específicos.
 
 ---
 

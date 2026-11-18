@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import UniqueConstraint
+from datetime import datetime
 
 # ==========================================
 # TABELAS ASSOCIATIVAS (Relações Muitos-para-Muitos)
@@ -28,6 +29,10 @@ class Unidade(db.Model):
     cidade = db.Column(db.String(100), nullable=False)
     estado = db.Column(db.String(2), nullable=False)
 
+    # Campos de Auditoria (Timestamps)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     # Relacionamentos 1:N
     recursos = db.relationship('Recurso', backref='unidade', lazy=True)
     usuarios = db.relationship('Usuario', backref='unidade', lazy=True)
@@ -43,6 +48,10 @@ class CategoriaRecurso(db.Model):
     nome = db.Column(db.String(100), nullable=False, unique=True) # Ex: Quadra, Laboratório, Auditório
     descricao = db.Column(db.String(255), nullable=True)
 
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     # Relacionamentos 1:N
     recursos = db.relationship('Recurso', backref='categoria', lazy=True)
 
@@ -52,6 +61,10 @@ class StatusAgendamento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False, unique=True) # Ex: Pendente, Confirmado, Cancelado
 
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
     # Relacionamentos 1:N
     agendamentos = db.relationship('Agendamento', backref='status', lazy=True)
 
@@ -60,6 +73,10 @@ class Perfil(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(50), nullable=False, unique=True) # Ex: Aluno, Admin, Comunidade
+
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 # ==========================================
 # ENTIDADES DE NEGÓCIO PRINCIPAIS
@@ -73,10 +90,14 @@ class Usuario(db.Model):
     email = db.Column(db.String(150), nullable=False, unique=True)
     senha_hash = db.Column(db.String(255), nullable=False)
     
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
     # Chaves Estrangeiras
     unidade_id = db.Column(db.Integer, db.ForeignKey('unidade.id'), nullable=False)
 
-    # Relacionamentos
+    # Relacionamentos (N:N com Perfil)
     perfis = db.relationship('Perfil', secondary=usuario_perfil, backref=db.backref('usuarios', lazy=True))
     agendamentos_solicitados = db.relationship('Agendamento', backref='solicitante', lazy=True)
 
@@ -86,6 +107,10 @@ class Recurso(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(150), nullable=False)
     capacidade = db.Column(db.Integer, nullable=False, default=0)
+    
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Chaves Estrangeiras
     unidade_id = db.Column(db.Integer, db.ForeignKey('unidade.id'), nullable=False)
@@ -106,6 +131,10 @@ class Agendamento(db.Model):
     data_hora_fim = db.Column(db.DateTime, nullable=False)
     finalidade = db.Column(db.String(255), nullable=False)
     
+    # Campos de Auditoria
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
     # Chaves Estrangeiras
     recurso_id = db.Column(db.Integer, db.ForeignKey('recurso.id'), nullable=False)
     usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False) # Quem solicitou
@@ -113,7 +142,6 @@ class Agendamento(db.Model):
 
     # Relacionamentos M:N (Outras pessoas convidadas para o agendamento)
     participantes = db.relationship('Usuario', secondary=participante_agendamento, backref=db.backref('agendamentos_participados', lazy=True))
-
 
     """
     IMPORTANTE:
@@ -128,4 +156,3 @@ class Agendamento(db.Model):
         Deixe para tratar isso na Regra de Negócio (no seu arquivo de rotas). Antes de dar o db.session.add(novo_agendamento), você fará uma 
         query verificando se já existe algum agendamento para aquele recurso_id cujos horários se cruzem com o horário solicitado.
     """
-    
