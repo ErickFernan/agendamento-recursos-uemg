@@ -60,10 +60,12 @@ def create_app():
 
     # Configuração do Loguru
     # Cria a pasta 'logs' automaticamente se ela não existir
-    os.makedirs('logs', exist_ok=True)
-    
-    # Configura para salvar em arquivo, criando um novo arquivo a cada 10MB
-    logger.add("logs/api.log", rotation="10 MB", retention="30 days", level="INFO")
+    try:
+        os.makedirs('logs', exist_ok=True)
+        # Configura para salvar em arquivo, criando um novo arquivo a cada 10MB
+        logger.add("logs/api.log", rotation="10 MB", retention="30 days", level="INFO")
+    except Exception:
+        pass
     logger.info("Iniciando a API de Agendamentos da UEMG...")
 
     # ==========================================
