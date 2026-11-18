@@ -42,7 +42,7 @@ def criar_usuario():
         logger.warning(f"Tentativa de criar usuário com dados inválidos: {erros}")
         return jsonify({"erro": "Dados inválidos", "detalhes": erros}), 400
     
-    unidade = Unidade.query.get(json_data['unidade_id'])
+    unidade = db.session.get(Unidade,json_data['unidade_id'])
     if not unidade:
         return jsonify({"erro": "A unidade informada não existe."}), 404
 
@@ -98,6 +98,35 @@ def listar_usuarios():
         logger.error(f"Erro interno crítico ao listar usuários: {str(e)}")
         return jsonify({"erro": "Erro ao buscar usuários.", "detalhes": str(e)}), 500
 
+@usuarios_bp.route('/usuarios/<int:id>', methods=['GET'])
+@swag_from(os.path.join(BASE_DIR, 'docs', 'usuarios', 'get_usuario_by_id.yml'))
+@jwt_required()
+def buscar_usuario_por_id(id):
+    """
+    Retorna os detalhes de um usuário específico pelo ID.
+    Autorização: Administradores ou o próprio dono do perfil.
+    """
+    claims = get_jwt()
+    is_admin = 'admin' in claims.get('perfis', [])
+    is_owner = str(claims.get('sub')) == str(id)
+
+    if not is_admin and not is_owner:
+        logger.warning(
+            f"Tentativa negada de acessar perfil do usuário {id}. ID Solicitante: {claims.get('sub')}"
+        )
+        return jsonify({"erro": "Acesso negado. Você só pode visualizar o seu próprio perfil."}), 403
+
+    try:
+        usuario = db.session.get(Usuario, id)
+        if not usuario:
+            logger.warning(f"Busca por usuário inexistente. ID: {id}")
+            return jsonify({"erro": "Usuário não encontrado."}), 404
+
+        return jsonify(usuario_schema.dump(usuario)), 200
+    except Exception as e:
+        logger.error(f"Erro interno crítico ao buscar usuário ID {id}: {str(e)}")
+        return jsonify({"erro": "Erro ao buscar usuário.", "detalhes": str(e)}), 500
+
 
 @usuarios_bp.route('/usuarios/<int:id>', methods=['PUT'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'usuarios', 'put_usuario.yml'))
@@ -115,7 +144,7 @@ def atualizar_usuario_total(id):
         logger.warning(f"Tentativa negada de PUT no usuário {id}. ID Solicitante: {claims.get('sub')}")
         return jsonify({"erro": "Acesso negado. Você só pode alterar seu próprio cadastro."}), 403
 
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
         logger.warning(f"Tentativa de atualização (PUT) em usuário inexistente. ID: {id}")
         return jsonify({"erro": "Usuário não encontrado."}), 404
@@ -128,7 +157,7 @@ def atualizar_usuario_total(id):
         return jsonify({"erro": "Dados inválidos", "detalhes": erros}), 400
 
     if 'unidade_id' in json_data:
-        unidade = Unidade.query.get(json_data['unidade_id'])
+        unidade = db.session.get(Unidade,json_data['unidade_id'])
         if not unidade:
              return jsonify({"erro": "A unidade informada não existe."}), 404
 
@@ -169,7 +198,7 @@ def atualizar_usuario_parcial(id):
         logger.warning(f"Tentativa negada de PATCH no usuário {id}. ID Solicitante: {claims.get('sub')}")
         return jsonify({"erro": "Acesso negado. Você só pode alterar seu próprio cadastro."}), 403
 
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
          logger.warning(f"Tentativa de atualização parcial (PATCH) em usuário inexistente. ID: {id}")
          return jsonify({"erro": "Usuário não encontrado."}), 404
@@ -182,7 +211,7 @@ def atualizar_usuario_parcial(id):
          return jsonify({"erro": "Dados inválidos", "detalhes": erros}), 400
 
     if 'unidade_id' in json_data:
-         unidade = Unidade.query.get(json_data['unidade_id'])
+         unidade = db.session.get(Unidade,json_data['unidade_id'])
          if not unidade:
               return jsonify({"erro": "A nova unidade informada não existe."}), 404
 
@@ -222,7 +251,7 @@ def deletar_usuario(id):
         logger.warning(f"Tentativa negada de deletar o usuário {id}. ID Solicitante: {claims.get('sub')}")
         return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
 
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
         logger.warning(f"Tentativa de exclusão (DELETE) em usuário inexistente. ID: {id}")
         return jsonify({"erro": "Usuário não encontrado."}), 404
@@ -256,7 +285,7 @@ def resetar_senha(id):
         logger.warning(f"Tentativa negada de resetar senha do usuário {id}. ID Solicitante: {claims.get('sub')}")
         return jsonify({"erro": "Acesso negado. Apenas administradores podem redefinir senhas."}), 403
 
-    usuario = Usuario.query.get(id)
+    usuario = db.session.get(Usuario, id)
     if not usuario:
         return jsonify({"erro": "Usuário não encontrado."}), 404
     

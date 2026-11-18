@@ -75,6 +75,23 @@ def listar_unidades():
         return jsonify({"erro": "Erro ao buscar unidades.", "detalhes": str(e)}), 500
 
 
+@unidades_bp.route('/unidades/<int:id>', methods=['GET'])
+@swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'get_unidade_by_id.yml'))
+@jwt_required()
+def buscar_unidade_por_id(id):
+    # Qualquer usuário logado pode consultar os detalhes de uma unidade
+    try:
+        unidade = db.session.get(Unidade, id)
+        if not unidade:
+            logger.warning(f"Busca por unidade inexistente. ID: {id}")
+            return jsonify({"erro": "Unidade não encontrada."}), 404
+
+        return jsonify(unidade_schema.dump(unidade)), 200
+    except Exception as e:
+        logger.error(f"Erro interno crítico ao buscar unidade ID {id}: {str(e)}")
+        return jsonify({"erro": "Erro ao buscar unidade.", "detalhes": str(e)}), 500
+    
+
 @unidades_bp.route('/unidades/<int:id>', methods=['PUT'])
 @swag_from(os.path.join(BASE_DIR, 'docs', 'unidades', 'put_unidade.yml'))
 @jwt_required()
@@ -84,7 +101,7 @@ def atualizar_unidade_total(id):
     if 'admin' not in claims.get('perfis', []):
         return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
 
-    unidade = Unidade.query.get(id)
+    unidade = db.session.get(Unidade, id)
     if not unidade:
         logger.warning(f"Tentativa de atualização total (PUT) em unidade inexistente. ID: {id}")
         return jsonify({"erro": "Unidade não encontrada."}), 404
@@ -125,7 +142,7 @@ def atualizar_unidade_parcial(id):
     if 'admin' not in claims.get('perfis', []):
         return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
 
-    unidade = Unidade.query.get(id)
+    unidade = db.session.get(Unidade, id)
     if not unidade:
         logger.warning(f"Tentativa de atualização parcial (PATCH) em unidade inexistente. ID: {id}")
         return jsonify({"erro": "Unidade não encontrada."}), 404
@@ -165,7 +182,7 @@ def deletar_unidade(id):
     if 'admin' not in claims.get('perfis', []):
         return jsonify({"erro": "Acesso negado. Requer privilégios de administrador."}), 403
 
-    unidade = Unidade.query.get(id)
+    unidade = db.session.get(Unidade, id)
     if not unidade:
         logger.warning(f"Tentativa de exclusão (DELETE) em unidade inexistente. ID: {id}")
         return jsonify({"erro": "Unidade não encontrada."}), 404

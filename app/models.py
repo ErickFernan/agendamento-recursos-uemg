@@ -1,6 +1,6 @@
 from app import db
 from sqlalchemy import UniqueConstraint
-from datetime import datetime
+from datetime import datetime, timezone
 
 # ==========================================
 # TABELAS ASSOCIATIVAS (Relações Muitos-para-Muitos)
@@ -30,8 +30,8 @@ class Unidade(db.Model):
     estado = db.Column(db.String(2), nullable=False)
 
     # Campos de Auditoria (Timestamps)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos 1:N
     recursos = db.relationship('Recurso', backref='unidade', lazy=True)
@@ -49,8 +49,8 @@ class CategoriaRecurso(db.Model):
     descricao = db.Column(db.String(255), nullable=True)
 
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos 1:N
     recursos = db.relationship('Recurso', backref='categoria', lazy=True)
@@ -62,8 +62,8 @@ class StatusAgendamento(db.Model):
     nome = db.Column(db.String(50), nullable=False, unique=True) # Ex: Pendente, Confirmado, Cancelado
 
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
     # Relacionamentos 1:N
     agendamentos = db.relationship('Agendamento', backref='status', lazy=True)
@@ -75,8 +75,8 @@ class Perfil(db.Model):
     nome = db.Column(db.String(50), nullable=False, unique=True) # Ex: Aluno, Admin, Comunidade
 
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
 # ==========================================
 # ENTIDADES DE NEGÓCIO PRINCIPAIS
@@ -91,8 +91,8 @@ class Usuario(db.Model):
     senha_hash = db.Column(db.String(255), nullable=False)
     
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Chaves Estrangeiras
     unidade_id = db.Column(db.Integer, db.ForeignKey('unidade.id'), nullable=False)
@@ -109,8 +109,8 @@ class Recurso(db.Model):
     capacidade = db.Column(db.Integer, nullable=False, default=0)
     
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Chaves Estrangeiras
     unidade_id = db.Column(db.Integer, db.ForeignKey('unidade.id'), nullable=False)
@@ -132,8 +132,8 @@ class Agendamento(db.Model):
     finalidade = db.Column(db.String(255), nullable=False)
     
     # Campos de Auditoria
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     # Chaves Estrangeiras
     recurso_id = db.Column(db.Integer, db.ForeignKey('recurso.id'), nullable=False)

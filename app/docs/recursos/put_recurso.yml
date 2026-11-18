@@ -1,0 +1,50 @@
+Atualiza todos os dados de um recurso (Apenas Admin)
+---
+tags:
+  - Recursos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do recurso
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      required:
+        - nome
+        - capacidade
+        - unidade_id
+        - categoria_id
+      properties:
+        nome:
+          type: string
+          example: "Laboratório de Informática 01 - Reformado"
+        capacidade:
+          type: integer
+          example: 40
+        unidade_id:
+          type: integer
+          example: 1
+        categoria_id:
+          type: integer
+          example: 1
+responses:
+  200:
+    description: Recurso atualizado com sucesso
+  400:
+    description: Dados inválidos
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (requer perfil admin)
+  404:
+    description: Recurso, unidade ou categoria não encontrada
+  409:
+    description: Já existe um recurso com este nome nesta unidade
+  500:
+    description: Erro interno no servidor

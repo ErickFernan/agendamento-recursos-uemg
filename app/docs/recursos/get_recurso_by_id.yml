@@ -1,0 +1,21 @@
+Busca um recurso específico pelo ID
+---
+tags:
+  - Recursos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do recurso
+responses:
+  200:
+    description: Detalhes do recurso retornados com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  404:
+    description: Recurso não encontrado
+  500:
+    description: Erro interno no servidor

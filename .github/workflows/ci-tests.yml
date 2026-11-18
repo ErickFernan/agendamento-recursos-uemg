@@ -27,8 +27,8 @@ jobs:
       - name: 4. Executar a suíte de testes com Pytest
         env:
           # Variáveis de ambiente temporárias para o teste rodar na nuvem
-          JWT_SECRET_KEY: "chave-secreta-de-teste-ci"
-          SECRET_KEY: "flask-secret-teste-ci"
+          JWT_SECRET_KEY: "2912caec3e5d084b955dab8de18b9207f80130a7ef5c07ed6630546bc5761600"
+          SECRET_KEY: "2912caec3e5d084b955dab8de18b9207f80130a7ef5c07ed6630546bc5761600"
           # Se o seu conftest.py usa SQLite em memória (sqlite:///:memory:), não precisa de Postgres aqui
           DATABASE_URL: "sqlite:///:memory:"
         run: |

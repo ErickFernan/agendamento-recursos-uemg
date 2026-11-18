@@ -1,0 +1,45 @@
+Atualiza parcialmente os dados de um recurso (Apenas Admin)
+---
+tags:
+  - Recursos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do recurso
+  - name: body
+    in: body
+    required: true
+    schema:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: "Auditório Principal"
+        capacidade:
+          type: integer
+          example: 120
+        unidade_id:
+          type: integer
+          example: 1
+        categoria_id:
+          type: integer
+          example: 3
+responses:
+  200:
+    description: Recurso atualizado parcialmente com sucesso
+  400:
+    description: Dados inválidos
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (requer perfil admin)
+  404:
+    description: Recurso, unidade ou categoria não encontrada
+  409:
+    description: Já existe um recurso com este nome nesta unidade
+  500:
+    description: Erro interno no servidor

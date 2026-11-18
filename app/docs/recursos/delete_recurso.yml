@@ -1,0 +1,25 @@
+Remove um recurso do sistema (Apenas Admin)
+---
+tags:
+  - Recursos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do recurso
+responses:
+  200:
+    description: Recurso deletado com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (requer perfil admin)
+  404:
+    description: Recurso não encontrado
+  409:
+    description: Não é possível deletar recurso com agendamentos vinculados
+  500:
+    description: Erro interno no servidor
