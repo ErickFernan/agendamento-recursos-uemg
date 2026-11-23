@@ -124,12 +124,16 @@ def create_app():
         from app.routes.auth_routes import auth_bp
         from app.routes.recursos_routes import recursos_bp
         from app.routes.categorias_routes import categorias_bp
+        from app.routes.perfis_routes import perfis_bp
+        from app.routes.status_agendamento_routes import status_agendamento_bp
 
         app.register_blueprint(unidades_bp, url_prefix='/api')
         app.register_blueprint(usuarios_bp, url_prefix='/api')
         app.register_blueprint(auth_bp, url_prefix='/api')
         app.register_blueprint(recursos_bp, url_prefix='/api')
         app.register_blueprint(categorias_bp, url_prefix='/api')
+        app.register_blueprint(perfis_bp, url_prefix='/api')
+        app.register_blueprint(status_agendamento_bp, url_prefix='/api')
         
         # Rota de Health Check (Teste rápido de integridade)
         @app.route('/health')
