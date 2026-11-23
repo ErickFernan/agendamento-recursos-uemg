@@ -1,0 +1,21 @@
+Busca uma categoria de recurso específica pelo ID
+---
+tags:
+  - Categorias
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID da categoria
+responses:
+  200:
+    description: Detalhes da categoria retornados com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  404:
+    description: Categoria não encontrada
+  500:
+    description: Erro interno no servidor
