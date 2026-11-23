@@ -1,0 +1,21 @@
+Busca um agendamento específico pelo ID
+---
+tags:
+  - Agendamentos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do agendamento
+responses:
+  200:
+    description: Detalhes do agendamento retornados com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  404:
+    description: Agendamento não encontrado
+  500:
+    description: Erro interno no servidor
