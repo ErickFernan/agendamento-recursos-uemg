@@ -124,6 +124,7 @@ def create_app():
         from app.routes.auth_routes import auth_bp
         from app.routes.recursos_routes import recursos_bp
         from app.routes.categorias_routes import categorias_bp
+        from app.routes.agendamentos_routes import agendamentos_bp
         from app.routes.perfis_routes import perfis_bp
         from app.routes.status_agendamento_routes import status_agendamento_bp
 
@@ -132,6 +133,7 @@ def create_app():
         app.register_blueprint(auth_bp, url_prefix='/api')
         app.register_blueprint(recursos_bp, url_prefix='/api')
         app.register_blueprint(categorias_bp, url_prefix='/api')
+        app.register_blueprint(agendamentos_bp, url_prefix='/api')
         app.register_blueprint(perfis_bp, url_prefix='/api')
         app.register_blueprint(status_agendamento_bp, url_prefix='/api')
         

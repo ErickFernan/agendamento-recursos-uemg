@@ -1,0 +1,29 @@
+Lista os agendamentos cadastrados com filtros opcionais
+---
+tags:
+  - Agendamentos
+security:
+  - Bearer: []
+parameters:
+  - name: recurso_id
+    in: query
+    type: integer
+    required: false
+    description: Filtra agendamentos por ID do recurso
+  - name: usuario_id
+    in: query
+    type: integer
+    required: false
+    description: Filtra agendamentos por ID do solicitante
+  - name: status_id
+    in: query
+    type: integer
+    required: false
+    description: Filtra agendamentos por ID do status
+responses:
+  200:
+    description: Lista de agendamentos retornada com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  500:
+    description: Erro interno no servidor

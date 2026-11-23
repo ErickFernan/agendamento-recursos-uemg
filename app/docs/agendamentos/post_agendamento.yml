@@ -1,0 +1,64 @@
+Cria um novo agendamento de recurso
+---
+tags:
+  - Agendamentos
+security:
+  - Bearer: []
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - data_hora_inicio
+        - data_hora_fim
+        - finalidade
+        - recurso_id
+      properties:
+        data_hora_inicio:
+          type: string
+          format: date-time
+          example: "2026-11-27T14:00:00"
+          description: Data e hora de início em hora inteira (07:00-22:00 para usuários comuns; livre para admin)
+        data_hora_fim:
+          type: string
+          format: date-time
+          example: "2026-11-27T16:00:00"
+          description: Data e hora de término em hora inteira, posterior ao início
+        finalidade:
+          type: string
+          example: "Aula prática de Engenharia de Software"
+        recurso_id:
+          type: integer
+          example: 1
+        usuario_id:
+          type: integer
+          example: 3
+          description: Opcional. Apenas administradores podem agendar em nome de outro usuário
+        status_id:
+          type: integer
+          example: 2
+          description: Opcional. Apenas administradores podem definir o status manualmente (padrão Confirmado para admin e Pendente para demais)
+        participantes_ids:
+          type: array
+          items:
+            type: integer
+          example: [2, 3]
+          description: Opcional. Lista de IDs de usuários participantes
+responses:
+  201:
+    description: Agendamento criado com sucesso (pode incluir aviso caso prioridade docente tenha substituído reserva pendente de aluno)
+  400:
+    description: Dados inválidos, horário fora de hora inteira ou fora da janela permitida (07:00-22:00)
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Usuário comum tentou reservar para terceiros ou definir status manualmente
+  404:
+    description: Recurso, usuário, status ou participante não encontrado
+  409:
+    description: Conflito de horário com agendamento ativo para o mesmo recurso
+  500:
+    description: Erro interno no servidor
+    

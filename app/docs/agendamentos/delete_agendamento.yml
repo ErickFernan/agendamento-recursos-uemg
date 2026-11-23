@@ -1,0 +1,23 @@
+Remove um agendamento do sistema
+---
+tags:
+  - Agendamentos
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do agendamento
+responses:
+  200:
+    description: Agendamento deletado com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Apenas o solicitante ou um administrador pode deletar este agendamento
+  404:
+    description: Agendamento não encontrado
+  500:
+    description: Erro interno no servidor
