@@ -50,7 +50,7 @@ A API segue o padrão RESTful com prefixo `/api` e controle de acesso baseado em
 ### 📋 Regras de Negócio e Auditoria (Agendamentos)
 
 - **Horas Inteiras:** `data_hora_inicio` e `data_hora_fim` devem ser informados em horas cheias (ex.: `14:00:00` às `16:00:00`), com término obrigatoriamente posterior ao início (`400 Bad Request`).
-- **Janela de Funcionamento:** Usuários comuns (`aluno`, `professor`, `comunidade`) só podem reservar em reservas que iniciem e terminem na mesma data, entre **07:00 e 22:00**. Administradores (`admin`) possuem **horário livre** para eventos especiais ou noturnos.
+- **Janela de Funcionamento e Dias Úteis:** Usuários comuns (`aluno`, `professor`, `comunidade`) só podem criar reservas que iniciem e terminem na mesma data, em **dias úteis (segunda a sexta)**, exceto **feriados nacionais e estaduais de MG** (validados offline via biblioteca `holidays`), entre **07:00 e 22:00**. Administradores (`admin`) possuem **datas e horários livres** para eventos noturnos, fins de semana ou feriados.
 - **Solicitante e Status Inicial:** Usuários comuns reservam apenas para si mesmos e a solicitação nasce como **`Pendente`**. Administradores podem reservar em nome de terceiros (`usuario_id`) e já criar a reserva como **`Confirmado`** (ou definir o status manualmente).
 - **Conflito de Horários e Prioridade Docente:**
   - Sobreposição com agendamento **`Confirmado`** bloqueia sempre (`409 Conflict`).

@@ -52,7 +52,7 @@ responses:
   200:
     description: Agendamento atualizado com sucesso
   400:
-    description: Dados inválidos ou horário fora da janela permitida
+    description: Dados inválidos, horário fora de hora inteira, fora da janela (07:00-22:00), fim de semana ou feriado (BR/MG) para usuários comuns
   401:
     description: Token JWT ausente, inválido ou expirado
   403:

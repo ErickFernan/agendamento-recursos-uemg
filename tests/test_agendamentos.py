@@ -181,6 +181,72 @@ def test_aluno_fora_do_horario_funcionamento_retorna_400(client, cenario_agendam
     assert response.status_code == 400
 
 
+def test_aluno_nao_pode_agendar_em_fim_de_semana_400(client, cenario_agendamento):
+    # 2026-12-05 é sábado
+    payload = {
+        "data_hora_inicio": "2026-12-05T10:00:00",
+        "data_hora_fim": "2026-12-05T12:00:00",
+        "finalidade": "Estudo no sábado",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+
+    response = client.post(
+        "/api/agendamentos",
+        json=payload,
+        headers=cenario_agendamento["aluno1_headers"],
+    )
+    data = response.get_json()
+
+    assert response.status_code == 400
+    assert "sábados ou domingos" in data["erro"]
+
+
+def test_aluno_nao_pode_agendar_em_feriado_400(client, cenario_agendamento):
+    # 2026-12-25 é sexta-feira (Natal - feriado nacional)
+    payload = {
+        "data_hora_inicio": "2026-12-25T10:00:00",
+        "data_hora_fim": "2026-12-25T12:00:00",
+        "finalidade": "Reunião no Natal",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+
+    response = client.post(
+        "/api/agendamentos",
+        json=payload,
+        headers=cenario_agendamento["aluno1_headers"],
+    )
+    data = response.get_json()
+
+    assert response.status_code == 400
+    assert "feriados" in data["erro"]
+
+
+def test_admin_pode_agendar_em_fim_de_semana_e_feriado_201(
+    client, admin_token_headers, cenario_agendamento
+):
+    payload_sabado = {
+        "data_hora_inicio": "2026-12-05T10:00:00",
+        "data_hora_fim": "2026-12-05T12:00:00",
+        "finalidade": "Evento institucional no sábado",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+    resp_sabado = client.post(
+        "/api/agendamentos", json=payload_sabado, headers=admin_token_headers
+    )
+    assert resp_sabado.status_code == 201
+
+    payload_feriado = {
+        "data_hora_inicio": "2026-12-25T14:00:00",
+        "data_hora_fim": "2026-12-25T16:00:00",
+        "finalidade": "Manutenção programada no feriado",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+    resp_feriado = client.post(
+        "/api/agendamentos", json=payload_feriado, headers=admin_token_headers
+    )
+    assert resp_feriado.status_code == 201
+
+
 def test_horario_quebrado_nao_inteiro_retorna_400(client, cenario_agendamento):
     payload = {
         "data_hora_inicio": "2026-12-01T14:30:00",
@@ -349,8 +415,8 @@ def test_professor_nao_sobrescreve_pendente_de_outro_professor_409(
     client, db_session, cenario_agendamento
 ):
     ag_prof1 = Agendamento(
-        data_hora_inicio=datetime(2026, 12, 5, 19, 0, 0),
-        data_hora_fim=datetime(2026, 12, 5, 21, 0, 0),
+        data_hora_inicio=datetime(2026, 12, 14, 19, 0, 0),
+        data_hora_fim=datetime(2026, 12, 14, 21, 0, 0),
         finalidade="Aula prof 1",
         recurso_id=cenario_agendamento["recurso"].id,
         usuario_id=cenario_agendamento["prof1"].id,
@@ -360,8 +426,8 @@ def test_professor_nao_sobrescreve_pendente_de_outro_professor_409(
     db_session.commit()
 
     payload = {
-        "data_hora_inicio": "2026-12-05T19:00:00",
-        "data_hora_fim": "2026-12-05T21:00:00",
+        "data_hora_inicio": "2026-12-14T19:00:00",
+        "data_hora_fim": "2026-12-14T21:00:00",
         "finalidade": "Aula prof 2",
         "recurso_id": cenario_agendamento["recurso"].id,
     }

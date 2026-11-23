@@ -1,4 +1,5 @@
 import os
+import holidays
 from flask import Blueprint, request, jsonify
 from flasgger import swag_from
 from loguru import logger
@@ -25,15 +26,43 @@ def _normalizar_naive(dt):
 
 
 def _validar_horario_funcionamento(inicio, fim, is_admin):
-    """Usuários comuns só podem reservar no mesmo dia, entre 07:00 e 22:00."""
+    """
+    Usuários comuns só podem reservar em dias úteis (segunda a sexta),
+    exceto feriados (BR/MG), na mesma data, entre 07:00 e 22:00.
+    Administradores têm acesso livre para eventos especiais.
+    """
     if is_admin:
         return None
-    if inicio.date() != fim.date() or inicio.hour < HORA_ABERTURA or fim.hour > HORA_FECHAMENTO:
+
+    if inicio.date() != fim.date():
         return (
-            f"Usuários comuns só podem agendar no mesmo dia, entre "
+            "Usuários comuns só podem criar reservas que iniciem e terminem na mesma data. "
+            "Para eventos com pernoite ou múltiplos dias, solicite a um administrador."
+        )
+
+    # 5 = Sábado, 6 = Domingo
+    if inicio.weekday() >= 5:
+        return (
+            "Usuários comuns não podem agendar aos sábados ou domingos. "
+            "Para reservas em fins de semana, solicite a um administrador."
+        )
+
+    # Feriados nacionais e estaduais de Minas Gerais
+    feriados_mg = holidays.country_holidays('BR', subdiv='MG', years=inicio.year)
+    if inicio.date() in feriados_mg:
+        nome_feriado = feriados_mg.get(inicio.date())
+        return (
+            f"Não é permitido agendar em feriados ({nome_feriado}) para usuários comuns. "
+            f"Solicite a um administrador."
+        )
+
+    if inicio.hour < HORA_ABERTURA or fim.hour > HORA_FECHAMENTO:
+        return (
+            f"Usuários comuns só podem agendar entre "
             f"{HORA_ABERTURA:02d}:00 e {HORA_FECHAMENTO:02d}:00. "
             f"Para horários especiais, solicite a um administrador."
         )
+
     return None
 
 

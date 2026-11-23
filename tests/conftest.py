@@ -7,6 +7,7 @@ from app.models import Usuario, Unidade, Perfil
 from flask_jwt_extended import create_access_token
 from werkzeug.security import generate_password_hash
 from sqlalchemy.pool import StaticPool
+from loguru import logger
 
 
 @pytest.fixture(scope='function')
@@ -106,3 +107,12 @@ def user_token_headers(app, unidade_padrao):
             }
         )
         return {"Authorization": f"Bearer {token}"}
+
+
+@pytest.fixture(scope="session", autouse=True)
+def desabilitar_logs_nos_testes():
+    """Impede que os módulos de app/ gravem no arquivo de log durante o pytest."""
+    logger.disable("app")
+    yield
+    logger.enable("app")
+    
