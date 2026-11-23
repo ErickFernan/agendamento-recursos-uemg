@@ -1,0 +1,21 @@
+Busca um perfil de acesso específico pelo ID
+---
+tags:
+  - Perfis
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID do perfil
+responses:
+  200:
+    description: Detalhes do perfil retornados com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  404:
+    description: Perfil não encontrado
+  500:
+    description: Erro interno no servidor
