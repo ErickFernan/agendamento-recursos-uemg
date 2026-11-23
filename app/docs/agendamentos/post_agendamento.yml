@@ -20,7 +20,7 @@ parameters:
           type: string
           format: date-time
           example: "2026-11-27T14:00:00"
-          description: Data e hora de início em hora inteira (07:00-22:00 para usuários comuns; livre para admin)
+          description: Data e hora de início em hora inteira (dias úteis, exceto feriados BR/MG, 07:00-22:00 para comuns; livre para admin)
         data_hora_fim:
           type: string
           format: date-time
@@ -50,7 +50,7 @@ responses:
   201:
     description: Agendamento criado com sucesso (pode incluir aviso caso prioridade docente tenha substituído reserva pendente de aluno)
   400:
-    description: Dados inválidos, horário fora de hora inteira ou fora da janela permitida (07:00-22:00)
+    description: Dados inválidos, horário fora de hora inteira, fora da janela (07:00-22:00), fim de semana ou feriado (BR/MG) para usuários comuns
   401:
     description: Token JWT ausente, inválido ou expirado
   403:
