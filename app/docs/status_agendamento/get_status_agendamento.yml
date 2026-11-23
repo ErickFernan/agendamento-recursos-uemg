@@ -1,0 +1,13 @@
+Lista todos os status de agendamento disponíveis
+---
+tags:
+  - Status de Agendamento
+security:
+  - Bearer: []
+responses:
+  200:
+    description: Lista de status de agendamento retornada com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  500:
+    description: Erro interno no servidor

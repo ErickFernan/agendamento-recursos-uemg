@@ -1,0 +1,13 @@
+Lista todos os perfis de acesso cadastrados
+---
+tags:
+  - Perfis
+security:
+  - Bearer: []
+responses:
+  200:
+    description: Lista de perfis retornada com sucesso
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  500:
+    description: Erro interno no servidor
