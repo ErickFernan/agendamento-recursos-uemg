@@ -1,0 +1,35 @@
+Cria uma nova categoria de recurso (Apenas Admin)
+---
+tags:
+  - Categorias
+security:
+  - Bearer: []
+parameters:
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      required:
+        - nome
+      properties:
+        nome:
+          type: string
+          example: "Laboratório de Informática"
+        descricao:
+          type: string
+          example: "Salas equipadas com computadores para aulas práticas"
+responses:
+  201:
+    description: Categoria criada com sucesso
+  400:
+    description: Dados inválidos ou corpo JSON ausente
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (requer privilégios de administrador)
+  409:
+    description: Já existe uma categoria com este nome
+  500:
+    description: Erro interno no servidor
+    

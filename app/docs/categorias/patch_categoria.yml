@@ -1,0 +1,39 @@
+Atualiza parcialmente uma categoria existente (Apenas Admin)
+---
+tags:
+  - Categorias
+security:
+  - Bearer: []
+parameters:
+  - name: id
+    in: path
+    type: integer
+    required: true
+    description: ID da categoria
+  - in: body
+    name: body
+    required: true
+    schema:
+      type: object
+      properties:
+        nome:
+          type: string
+          example: "Quadra Poliesportiva"
+        descricao:
+          type: string
+          example: "Quadras cobertas e descobertas"
+responses:
+  200:
+    description: Categoria atualizada parcialmente com sucesso
+  400:
+    description: Dados inválidos ou corpo JSON ausente
+  401:
+    description: Token JWT ausente, inválido ou expirado
+  403:
+    description: Acesso negado (requer privilégios de administrador)
+  404:
+    description: Categoria não encontrada
+  409:
+    description: Já existe uma categoria com este nome
+  500:
+    description: Erro interno no servidor
