@@ -440,6 +440,58 @@ def test_professor_nao_sobrescreve_pendente_de_outro_professor_409(
     assert response.status_code == 409
 
 
+def test_agendamentos_colados_nao_geram_conflito_201(client, db_session, cenario_agendamento):
+    ag_anterior = Agendamento(
+        data_hora_inicio=datetime(2026, 12, 15, 14, 0, 0),
+        data_hora_fim=datetime(2026, 12, 15, 16, 0, 0),
+        finalidade="Aula anterior",
+        recurso_id=cenario_agendamento["recurso"].id,
+        usuario_id=cenario_agendamento["prof1"].id,
+        status_id=cenario_agendamento["status"]["Confirmado"].id,
+    )
+    db_session.add(ag_anterior)
+    db_session.commit()
+
+    payload = {
+        "data_hora_inicio": "2026-12-15T16:00:00",
+        "data_hora_fim": "2026-12-15T18:00:00",
+        "finalidade": "Aula imediatamente seguinte",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+    response = client.post(
+        "/api/agendamentos",
+        json=payload,
+        headers=cenario_agendamento["aluno1_headers"],
+    )
+    assert response.status_code == 201
+
+
+def test_horario_com_reserva_cancelada_fica_livre_201(client, db_session, cenario_agendamento):
+    ag_cancelado = Agendamento(
+        data_hora_inicio=datetime(2026, 12, 16, 10, 0, 0),
+        data_hora_fim=datetime(2026, 12, 16, 12, 0, 0),
+        finalidade="Reserva cancelada",
+        recurso_id=cenario_agendamento["recurso"].id,
+        usuario_id=cenario_agendamento["aluno1"].id,
+        status_id=cenario_agendamento["status"]["Cancelado"].id,
+    )
+    db_session.add(ag_cancelado)
+    db_session.commit()
+
+    payload = {
+        "data_hora_inicio": "2026-12-16T10:00:00",
+        "data_hora_fim": "2026-12-16T12:00:00",
+        "finalidade": "Nova reserva no horário livre",
+        "recurso_id": cenario_agendamento["recurso"].id,
+    }
+    response = client.post(
+        "/api/agendamentos",
+        json=payload,
+        headers=cenario_agendamento["aluno2_headers"],
+    )
+    assert response.status_code == 201
+    
+
 # ==========================================
 # LEITURA E FILTROS (GET)
 # ==========================================
