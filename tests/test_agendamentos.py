@@ -682,5 +682,4 @@ def test_agendamentos_colados_nao_geram_conflito_201(client, db_session, cenario
         json=payload,
         headers=cenario_agendamento["aluno1_headers"],
     )
-    assert response.status_code == 200
-    
+    assert response.status_code == 201
