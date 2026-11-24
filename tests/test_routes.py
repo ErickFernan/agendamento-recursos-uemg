@@ -7,5 +7,10 @@ def test_rota_inexistente_404(client):
 
 
 def test_metodo_nao_permitido_405(client):
-    response = client.get("/login")
-    assert response.status_code in [405, 404]
+    response = client.get("/api/login")
+    assert response.status_code == 405
+
+
+def test_health_check_200(client):
+    response = client.get("/health")
+    assert response.status_code == 200
