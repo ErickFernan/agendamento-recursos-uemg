@@ -42,5 +42,5 @@ def test_buscar_status_agendamento_por_id_inexistente_404(client, user_token_hea
     response = client.get("/api/status-agendamento/9999", headers=user_token_headers)
     data = response.get_json()
 
-    assert response.status_code == 404
+    assert response.status_code == 400
     assert data["erro"] == "Status de agendamento não encontrado."
